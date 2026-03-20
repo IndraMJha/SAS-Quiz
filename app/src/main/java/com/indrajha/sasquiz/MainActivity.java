@@ -36,15 +36,13 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            // Map user input to Firebase login. 
-            // In a real app, users would use their real email. 
-            // For your transition, we use name + a fixed domain as email and aNum as password.
+            // Map user input to Firebase login.
             String email = name.toLowerCase() + "@sasquiz.com";
             
             mAuth.signInWithEmailAndPassword(email, aNum)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
+                        // Sign in success
                         Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
                         intent.putExtra("myName", name);
                         intent.putExtra("aNo", aNum);

@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.indrajha.sasquiz1",
+  "applicationId": "com.indrajha.sasquiz",
   "variantName": "flavor1Debug",
   "elements": [
     {
@@ -12,9 +12,10 @@
       "filters": [],
       "attributes": [],
       "versionCode": 1,
-      "versionName": "1.2.0",
+      "versionName": "1.2.3",
       "outputFile": "app-flavor1-debug.apk"
     }
   ],
-  "elementType": "File"
+  "elementType": "File",
+  "minSdkVersionForDexing": 21
 }

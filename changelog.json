@@ -1,0 +1,7 @@
+{
+  "changelogs": {
+    "2_0": "Added Firebase Authentication and Cloud Questions.",
+    "1_5": "Implemented new UI for Result Screen.",
+    "1_2": "Added support for CSV based question loading."
+  }
+}
