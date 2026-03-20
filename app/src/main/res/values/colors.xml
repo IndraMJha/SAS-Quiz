@@ -3,4 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="butt1">#099F9A</color>
+    <color name="butt2">#fda3D1</color>
+    <color name="butt3">#88aaee</color>
+    <color name="butt4">#ED425C</color>
+    <color name="butt5">#099F9A</color>
 </resources>

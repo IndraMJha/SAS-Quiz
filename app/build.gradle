@@ -1,26 +1,48 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
-
+    compileSdkVersion 33
+    namespace 'com.indrajha.sasquiz'
     defaultConfig {
-        applicationId "com.example.vikasojha.quizbee"
+        applicationId "com.indrajha.sasquiz"
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 33
         versionCode 1
-        versionName "1.0"
+        versionName "1.2.3"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
     }
-}
+    viewBinding {
+        enabled true
+    }
+    ///added to try multiple apps simultaneously...
+    flavorDimensions "version"
+    productFlavors {
+        flavor1 {
 
+            applicationId "com.indrajha.sasquiz"
+        }
+        flavor2 {
+
+            applicationId "com.indrajha.sasquiz_f2"
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.4.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    testImplementation 'junit:junit:4.13.2'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'org.apache.commons:commons-csv:1.8'
 }

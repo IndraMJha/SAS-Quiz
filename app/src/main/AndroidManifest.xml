@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.vikasojha.quizbee">
+    package="com.indrajha.sasquiz">
 
     <application
         android:allowBackup="true"
@@ -8,28 +8,44 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+
+        <activity android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".QuestionsActivity">
+
+        <activity
+            android:name=".WelcomeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_welcome"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+        <activity android:name=".QuestionsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="true">
             <intent-filter>
-                <action android:name="com.example.vikasojha.quizbee.QuestionsActivity" />
+                <action android:name="com.indrajha.sasquiz.QuestionsActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".DeveloperActivity">
+
+        <activity android:name=".DeveloperActivity"
+            android:exported="true">
             <intent-filter>
-                <action android:name="com.example.vikasojha.quizbee.DeveloperActivity" />
+                <action android:name="com.indrajha.sasquiz.DeveloperActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ResultActivity"></activity>
+        <activity android:name=".ResultActivity" />
     </application>
 
 </manifest>

@@ -1,4 +1,54 @@
 <resources>
-    <string name="app_name">QuizBee</string>
+    <string name="app_name">SAS Quiz v.2</string>
+    <string name="choose_paper1">Choose Paper Part 1 Mixed Sets</string>
+    <string name="choose_paper2">Choose Paper Part 2</string>
+    <string name="choose_p1_s">Choose Paper Part 1 Topic Wise</string>
+    <string name="dept">DEFENCE ACCOUNTS DEPARTMENT</string>
+    <string name="enter_name">Enter your name</string>
+    <string name="enter_acn">Enter your Ac. No.</string>
+
     <string name="your_score">Your Score</string>
+    <string name="indra">INDRA JHA</string>
+    <string name="email">indramohan29@gmail.com</string>
+    <string name="office">CDA PATNA</string>
+    <string name="login">Login</string>
+    <string name="invalid_user">Not a valid username</string>
+    <string name="invalid_pass">Password incorrect, Use your A/c No.</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="quizapp">SASQuizApp</string>
+    <string name="package_name">com.indrajha.quiz</string>
+    <string name="quit">Quit</string>
+    <string name="start">Start</string>
+
+    <string name="about">About</string>
+    <string name="select_paper">Select Paper :</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">Welcome !</string>
+    <string name="developed_by">Made with ❤ by</string>
+    <string name="back">Back</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="selected_paper_name">Selected Paper Name</string>
+    <string name="restart">Restart</string>
+    <string name="review">Review</string>
+    <string name="insta">Instagram</string>
+    <string name="temp_display">Temp_display</string>
+    <string name="timer">Total Time</string>
+    <string name="questions">Questions</string>
+    <string name="submit">Submit</string>
+    <string name="a">A</string>
+    <string name="b">B</string>
+    <string name="c">C</string>
+    <string name="d">D</string>
 </resources>
