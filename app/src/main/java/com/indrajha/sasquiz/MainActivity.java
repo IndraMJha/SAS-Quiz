@@ -6,13 +6,19 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
+
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
 
         final Button startButton = findViewById(R.id.buttonLogin);
         Button aboutButton = findViewById(R.id.buttonAbout);
@@ -22,28 +28,33 @@ public class MainActivity extends AppCompatActivity {
         final EditText accountNo    = findViewById(R.id.actNo);
 
         startButton.setOnClickListener(v -> {
-            String name = uName.getText().toString();
-            String aNum = accountNo.getText().toString();
+            String name = uName.getText().toString().trim();
+            String aNum = accountNo.getText().toString().trim();
 
-            boolean isValidUser = false;
-
-            String[] validUsers     = {"indra","neha","pushpa","suman","sushil","friend","umesh", "mantosh", "pappuram", "sanjiv","amar", "sumit" , "dinanath","sucharita", "santosh","ramesh","rustam","navdeep","manab","bhushan","sanchaita"};
-            String[] validIDs       = {"7777","8343818","8343817","8343417","8340249","1234567","8351179","8347491","8351347","8342498","8342366","8349138","8342499","8341372","8347406","8347838","8349107","8350116","8339982","8307591","8348665"};
-
-            for (int i=0; i< validUsers.length;i++){
-                if(name.trim().toLowerCase().equals(validUsers[i]) && aNum.equals(validIDs[i])){
-                    isValidUser=true;
-                    break;
-                }
+            if (name.isEmpty() || aNum.isEmpty()) {
+                Toast.makeText(this, "Please enter both name and account number", Toast.LENGTH_SHORT).show();
+                return;
             }
-            if (isValidUser){
-                Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
-                intent.putExtra("myName", name);
-                intent.putExtra("aNo", aNum);
-                startActivity(intent);
-            } else {
-                Toast.makeText(getApplicationContext(), getString(R.string.invalid_user)+ " / " +getString(R.string.invalid_pass), Toast.LENGTH_SHORT).show();
-            }
+
+            // Map user input to Firebase login. 
+            // In a real app, users would use their real email. 
+            // For your transition, we use name + a fixed domain as email and aNum as password.
+            String email = name.toLowerCase() + "@sasquiz.com";
+            
+            mAuth.signInWithEmailAndPassword(email, aNum)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Intent intent = new Intent(getApplicationContext(), WelcomeActivity.class);
+                        intent.putExtra("myName", name);
+                        intent.putExtra("aNo", aNum);
+                        startActivity(intent);
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Toast.makeText(MainActivity.this, "Authentication failed: " + task.getException().getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
         });
 
         aboutButton.setOnClickListener(v -> {
