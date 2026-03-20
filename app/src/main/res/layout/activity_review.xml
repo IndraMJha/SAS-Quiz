@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.indrajha.sasquiz.QuestionsActivity">
+
+    <TextView
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/DispName"
+        android:textColor="@color/accent_material_light"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        tools:ignore="PrivateResource" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/questions"
+        android:id="@+id/tvque"
+        android:layout_marginBottom="40dp"
+        android:layout_above="@+id/answersgrp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <RadioGroup
+        android:id="@+id/answersgrp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/DispName"
+        android:layout_alignLeft="@+id/DispName"
+        android:layout_centerVertical="true"
+        android:clickable="true"
+        android:minWidth="48dp"
+        android:focusable="true">
+        <!--android:layout-->
+        <!--android:checkedButton="@+id/radioButton"-->
+
+        <RadioButton
+            android:id="@+id/radioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:minWidth="48dp"
+            android:text="@string/a" />
+
+        <RadioButton
+            android:id="@+id/radioButton2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:minWidth="48dp"
+            android:text="@string/b" />
+
+        <RadioButton
+            android:id="@+id/radioButton3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:minWidth="48dp"
+            android:text="@string/c" />
+
+        <RadioButton
+            android:id="@+id/radioButton4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:minWidth="48dp"
+            android:text="@string/d" />
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/buttonPrev"
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/answersgrp"
+        android:layout_marginTop="27dp"
+        android:layout_marginStart="24dp"
+        android:background="@drawable/round_butt2"
+        android:text="@string/previous"
+        android:textColor="#212121"
+        android:layout_marginLeft="24dp" />
+
+    <Button
+        android:id="@+id/buttonNext"
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/answersgrp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="27dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:background="@drawable/round_butt"
+        android:text="@string/next"
+        android:textColor="#212121" />
+
+    <Button
+        android:id="@+id/buttonquit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonPrev"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:background="@drawable/round_butt3"
+        android:maxWidth="240dp"
+        android:text="@string/submit"
+        android:textColor="#4E342E"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp" />
+
+    <TextView
+        android:id="@+id/timerView"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_above="@id/tempView"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="@dimen/activity_vertical_narrow_margin"
+        android:text="@string/timer"
+        android:textColor="@color/colorAccent"
+        android:textSize="19sp"
+        tools:ignore="TextSizeCheck" />
+
+    <TextView
+        android:id="@+id/timer"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_above="@id/tempView"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/activity_vertical_narrow_margin"
+        android:gravity="center_horizontal"
+        android:text="00:00"
+        android:textAlignment="center"
+        android:textColor="@color/colorAccent"
+        android:textSize="19sp"
+        android:textStyle="bold"
+        tools:ignore="TextSizeCheck" />
+
+    <TextView
+        android:id="@+id/tempView"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_above="@id/tvScore"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="@dimen/activity_vertical_narrow_margin"
+        android:text="@string/temp_display"
+        android:textColor="#ddeeff"
+        android:textSize="19sp"
+        tools:ignore="TextSizeCheck" />
+
+    <TextView
+        android:id="@+id/tvScore"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/activity_vertical_margin"
+        android:text="@string/your_score"
+        android:textColor="#000000"
+        android:textSize="19sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/tvScoreV"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:text=""
+        android:textColor="#000000"
+        android:layout_alignParentBottom="true"
+        android:textAlignment="center"
+        android:layout_alignParentRight="true"
+        android:textSize="19sp"
+        android:gravity="center_horizontal"
+        android:layout_alignParentEnd="true" />
+</RelativeLayout>
