@@ -28,10 +28,6 @@ android {
 
             applicationId "com.indrajha.sasquiz"
         }
-        flavor2 {
-
-            applicationId "com.indrajha.sasquiz_f2"
-        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
