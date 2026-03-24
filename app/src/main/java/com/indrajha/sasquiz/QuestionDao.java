@@ -14,6 +14,9 @@ public interface QuestionDao {
     @Query("SELECT * FROM questions WHERE category = :category AND paper = :paper")
     List<Question> getQuestionsBySet(String category, String paper);
 
+    @Query("SELECT COUNT(*) FROM questions")
+    int getQuestionCount();
+
     @Query("DELETE FROM questions")
     void deleteAll();
 }

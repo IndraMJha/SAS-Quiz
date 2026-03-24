@@ -60,23 +60,26 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textPart1"
+            <!-- Category 1: Part 1 -->
+            <RadioButton
+                android:id="@+id/rbPart1"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:layout_marginTop="36dp"
-                android:text="@string/choose_paper1" />
+                android:text="@string/choose_paper1"
+                android:checked="true" />
 
             <Spinner
                 android:id="@+id/spinner1"
                 android:layout_width="240dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="8dp"
                 android:contentDescription="@string/choose_paper1"
                 android:minHeight="48dp" />
 
-            <TextView
-                android:id="@+id/textPart3"
+            <!-- Category 2: Part 1 Book wise -->
+            <RadioButton
+                android:id="@+id/rbBookWise"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:layout_marginTop="24dp"
@@ -86,11 +89,15 @@
                 android:id="@+id/spinner2"
                 android:layout_width="240dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="8dp"
                 android:contentDescription="@string/choose_paper2"
+                android:enabled="false"
+                android:alpha="0.5"
                 android:minHeight="48dp" />
-            <TextView
-                android:id="@+id/textPart2"
+
+            <!-- Category 3: Part 2 -->
+            <RadioButton
+                android:id="@+id/rbPart2"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:layout_marginTop="24dp"
@@ -100,8 +107,28 @@
                 android:id="@+id/spinner3"
                 android:layout_width="240dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="8dp"
                 android:contentDescription="@string/choose_paper2"
+                android:enabled="false"
+                android:alpha="0.5"
+                android:minHeight="48dp" />
+
+            <!-- Category 4: Latest Questions -->
+            <RadioButton
+                android:id="@+id/rbLatest"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_marginTop="24dp"
+                android:text="Latest Questions" />
+
+            <Spinner
+                android:id="@+id/spinnerLatest"
+                android:layout_width="240dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:contentDescription="Latest Questions"
+                android:enabled="false"
+                android:alpha="0.5"
                 android:minHeight="48dp" />
 
             <TextView

@@ -64,7 +64,7 @@ public class QuestionsCSV_ReadActivity extends AppCompatActivity {
         wrong = 0;
         marks = 0;
 
-        if (part_name != null && part_name.equals("Part 1 : Book wise")) {
+        if (part_name != null && (part_name.equals("Part 1 : Book wise") || part_name.equals("Latest Questions"))) {
             fetchQuestionsFromFirebase(paper_name);
         } else {
             Toast.makeText(this, "Select a valid Book-wise paper", Toast.LENGTH_SHORT).show();
@@ -83,6 +83,8 @@ public class QuestionsCSV_ReadActivity extends AppCompatActivity {
     }
 
     private void fetchQuestionsFromFirebase(String paperName) {
+        // Use the paper name directly as the Firebase node name
+        // Firebase path: questions/<paperName>/q1, q2, ...
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("questions").child(paperName);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -111,12 +113,14 @@ public class QuestionsCSV_ReadActivity extends AppCompatActivity {
                     displayCurrentQuestion();
                 } else {
                     Toast.makeText(QuestionsCSV_ReadActivity.this, "No questions found in Firebase for: " + paperName, Toast.LENGTH_LONG).show();
+                    finish();
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(QuestionsCSV_ReadActivity.this, "Database Error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
     }

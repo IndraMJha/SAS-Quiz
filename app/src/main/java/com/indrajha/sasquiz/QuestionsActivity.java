@@ -10,13 +10,18 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import android.os.AsyncTask;
 
 public class QuestionsActivity extends AppCompatActivity {
     TextView tv;
     Button nextButton, prevButton, quitButton;
     RadioGroup radio_g;
     RadioButton rb1,rb2,rb3,rb4;
+    private DataRepository repository;
+    private List<Question> questionsList = new ArrayList<>();
 
     ///  Timer variables
     private TextView timerTextView;
@@ -47,84 +52,38 @@ public class QuestionsActivity extends AppCompatActivity {
         part_name=intent.getStringExtra("part");
         paper_name= intent.getStringExtra("paper");
 
-        if (part_name.equals("Part 1")) {
-            question=Part1QuestionList.questions;
-            opt=Part1OptionsList.opt;
-            answers =Part1AnswersList.answers;
-            switch (paper_name) {
-                case ("Paper 1 SET1"):
-                    flag = 0;
-                    break;
-                case ("Paper 1 SET2"):
-                    flag = 100;
-                    break;
-                case ("Paper 1 SET3"):
-                    flag = 200;
-                    break;
-                case ("Paper 1 SET4"):
-                    flag = 300;
-                    break;
-                case ("PAPER2 SET1"):
-                    flag = 400;
-                    break;
-                case ("PAPER2 SET2"):
-                    flag = 500;
-                    break;
-                case ("PAPER2 SET3"):
-                    flag = 600;
-                    break;
-                case ("PAPER2 SET4"):
-                    flag = 700;
-                    break;
-                case ("PAPER2 SET5"):
-                    flag = 800;
-                    break;
-                case ("PAPER2 SET6"):
-                    flag = 900;
-                    break;
-                case ("PAPER2 SET7"):
-                    flag = 1000;
-                    break;
-                case ("PAPER2 SET8"):
-                    flag = 1100;
-                    break;
-                case ("PAPER2 SET9"):
-                    flag = 1200;
-                    break;
-                case ("PAPER2 SET10"):
-                    flag = 1300;
-                    break;
-                case ("Paper 2 SET 11"):
-                    flag = 1400;
-                    break;
-                case ("Paper 2 SET 12"):
-                    flag = 1500;
-                    break;
-                case ("Paper 2 SET 13"):
-                    flag = 1600;
-                    break;
-            }
-        } else {
-            //Part if 2
-            question=Part2QuestionList.questions;
-            opt=Part2OptionsList.opt;
-            answers =Part2AnswersList.answers;
-            switch (paper_name) {
-                //"OM IX - Set 1", "OM IX - Set 2", "OM IX - Set 3"}
-                case ("OM IX - Set 1"):
-                    flag = 0;
-                    break;
-                case ("OM IX - Set 2"):
-                    flag = 100;
-                    break;
-                case ("OM IX - Set 3"):
-                    flag = 200;
-                    break;
-            }
-        }
+        repository = new DataRepository(this);
+        loadQuestions();
+    }
 
-        stQuest=1;
-        maxQuest = Math.min(question.length - flag, 100);
+    private void loadQuestions() {
+        new AsyncTask<Void, Void, List<Question>>() {
+            @Override
+            protected List<Question> doInBackground(Void... voids) {
+                return repository.getQuestions(part_name, paper_name);
+            }
+
+            @Override
+            protected void onPostExecute(List<Question> questions) {
+                questionsList = questions;
+                if (questionsList.isEmpty()) {
+                    Toast.makeText(QuestionsActivity.this, "No questions found for " + paper_name, Toast.LENGTH_SHORT).show();
+                    finish();
+                    return;
+                }
+                initViews();
+            }
+        }.execute();
+    }
+
+    private void initViews() {
+        final TextView score = findViewById(R.id.tvScoreV);
+        final TextView textView= findViewById(R.id.DispName);
+        final TextView tempV = findViewById(R.id.tempView);
+
+        flag = 0; // Current question index within the paper
+        stQuest = 1;
+        maxQuest = questionsList.size();
 
         nextButton= findViewById(R.id.buttonNext);
         prevButton= findViewById(R.id.buttonPrev);
@@ -141,11 +100,8 @@ public class QuestionsActivity extends AppCompatActivity {
         // for Total number of questions in Set Using maxQuest that is 100, value instead of questions.length (that is 400 now)
         textView.setText("Q.No. " + stQuest + " / " + maxQuest + " : " + paper_name);
         tempV.setText("prev = " + prev + " stQuest = " + stQuest + " flag = " + flag);
-        tv.setText(question[flag]);
-        rb1.setText(opt[flag*4]);
-        rb2.setText(opt[flag*4 +1]);
-        rb3.setText(opt[flag*4 +2]);
-        rb4.setText(opt[flag*4 +3]);
+        
+        displayQuestion();
 
         nextButton.setOnClickListener(v -> {
             if(radio_g.getCheckedRadioButtonId()==-1)
@@ -155,14 +111,14 @@ public class QuestionsActivity extends AppCompatActivity {
             }
             RadioButton uAns = findViewById(radio_g.getCheckedRadioButtonId());
             String ansText = uAns.getText().toString();
-           // Toast.makeText(getApplicationContext(), ansText, Toast.LENGTH_SHORT).show();
-            if(ansText.equals(answers[flag])) {
+            Question currentQ = questionsList.get(flag);
+            if(ansText.equals(currentQ.getCorrectAnswer())) {
                 correct++;
                 Toast.makeText(getApplicationContext(), "Correct", Toast.LENGTH_SHORT).show();
             }
             else {
                 wrong++;
-                Toast.makeText(getApplicationContext(), "Wrong. "+"Correct answer is : "+answers[flag], Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Wrong. "+"Correct answer is : "+currentQ.getCorrectAnswer(), Toast.LENGTH_SHORT).show();
             }
             flag++;
             stQuest++;
@@ -170,16 +126,10 @@ public class QuestionsActivity extends AppCompatActivity {
             tempV.setText("prev = " + prev + " stQuest = " + stQuest + " flag = " + flag);
             if (score != null)
                 score.setText("" + correct );
-            // previously if(flag<questions.length)
-            if(stQuest<maxQuest)
+            if(flag < maxQuest)
             {
                 textView.setText("Q.No. " + stQuest + " / " + maxQuest + " : " + paper_name);
-               /// textView.setText("Question No. " + (flag+1)+" / "+questions.length);
-                tv.setText(question[flag]);
-                rb1.setText(opt[flag*4]);
-                rb2.setText(opt[flag*4 +1]);
-                rb3.setText(opt[flag*4 +2]);
-                rb4.setText(opt[flag*4 +3]);
+                displayQuestion();
                 tempV.setText(String.format("prev = %d stQuest = %d flag = %d", prev, stQuest, flag));
             }
             else
@@ -194,19 +144,14 @@ public class QuestionsActivity extends AppCompatActivity {
         prevButton.setOnClickListener(v -> {
             if(stQuest-prev>0)
             {
-                if(stQuest - 1 - prev == 0) {
+                if(stQuest - 1 - prev == 1) { // Changed index logic for prev
                     Toast.makeText(getApplicationContext(), "You are at the first Question", Toast.LENGTH_SHORT).show();
                     tempV.setText(String.format("prev = %d stQuest = %d flag = %d", prev, stQuest, flag));
                 }
                 else {
                     prev++;
                     textView.setText("Q.No. " + (stQuest - prev) + " / " + maxQuest + " : " + paper_name);
-                    /// textView.setText("Question No. " + (flag+1)+" / "+questions.length);
-                    tv.setText(question[flag - prev]);
-                    rb1.setText(opt[(flag - prev) * 4]);
-                    rb2.setText(opt[(flag - prev) * 4 + 1]);
-                    rb3.setText(opt[(flag - prev) * 4 + 2]);
-                    rb4.setText(opt[(flag - prev) * 4 + 3]);
+                    displayQuestion(flag - prev);
                     tempV.setText("prev = " + prev + " stQuest = " + stQuest + " flag = " + flag);
                 }
             }
@@ -217,6 +162,21 @@ public class QuestionsActivity extends AppCompatActivity {
         });
         ///  Timer code
         timerTextView=findViewById(R.id.timer);
+        startTimer();
+    }
+
+    private void displayQuestion() {
+        displayQuestion(flag);
+    }
+
+    private void displayQuestion(int index) {
+        Question q = questionsList.get(index);
+        tv.setText(q.getText());
+        rb1.setText(q.getOption1());
+        rb2.setText(q.getOption2());
+        rb3.setText(q.getOption3());
+        rb4.setText(q.getOption4());
+        radio_g.clearCheck();
     }
     private void startTimer() {
         totalTimeInMillis = 60 * 60 * 1000; // Total time in milliseconds (60 minutes)
@@ -235,10 +195,7 @@ public class QuestionsActivity extends AppCompatActivity {
             }
             @Override
             public void onFinish() {
-                // Timer finished, handle accordingly
-                // For example, navigate to the ResultActivity with the total time
                 Intent intent = new Intent(QuestionsActivity.this, ResultActivity.class);
-                //intent.putExtra("totalTimeTaken", (totalTimeInMillis-timeRemainingInMillis)/1000);
                 startActivity(intent);
                 finish();
             }
@@ -246,20 +203,18 @@ public class QuestionsActivity extends AppCompatActivity {
         countDownTimer.start();
         timerRunning = true;
     }
-    /// Override the `onPause` and `onResume` methods to handle pausing and resuming the timer when the app goes into the background and comes back to the foreground:
     @Override
     protected void onPause() {
         super.onPause();
-        if (timerRunning) {
+        if (timerRunning && countDownTimer != null) {
             countDownTimer.cancel();
         }
     }
     @Override
     protected void onResume() {
         super.onResume();
-        if (timerRunning) {
-            countDownTimer.start();
+        if (timerRunning && timerTextView != null) {
+            startTimer();
         }
-        startTimer();
     }
 }
