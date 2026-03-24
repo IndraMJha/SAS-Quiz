@@ -48,6 +48,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ResultActivity" />
+        <activity android:name=".QuestionsCSV_ReadActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="false" />
     </application>
 
 </manifest>
