@@ -7,10 +7,11 @@ An Android quiz application built for **SAS (Subordinate Accounts Service)** exa
 - **2,000+ Questions** — Covers Part 1 (17 paper sets), Part 1 Book-wise (18 subjects including Accounts Code, FR, GST, RTI Act, etc.), and Part 2 (OM IX sets)
 - **Offline-First** — All core questions are pre-packaged in a SQLite database via Room, so the app works without internet
 - **Dynamic Question Sets** — "Latest Questions" are fetched live from Firebase Realtime Database, allowing new sets to be added without updating the APK
+- **Secure Google Sign-In** — Unified login using Google Authentication
+- **Access Control** — Admin-managed "Whitelisting" via Realtime Database to restrict app access
 - **Timed Quiz** — 60-minute countdown timer per quiz session
 - **Instant Feedback** — Shows correct/wrong status after each answer
 - **Score Tracking** — Displays correct answers, wrong answers, and final score (with negative marking: -¼ per wrong answer)
-- **Firebase Authentication** — User login via name and account number
 - **Navigation** — Next/Previous question buttons to review answers
 
 ## 🏗️ Architecture
@@ -19,7 +20,7 @@ An Android quiz application built for **SAS (Subordinate Accounts Service)** exa
 |---|---|
 | **Database** | Room (pre-populated from asset) |
 | **Remote Data** | Firebase Realtime Database |
-| **Authentication** | Firebase Auth |
+| **Authentication** | Firebase Google Sign-In |
 | **Image Loading** | Picasso |
 | **Min SDK** | 23 (Android 6.0) |
 | **Target SDK** | 33 (Android 13) |
@@ -28,7 +29,7 @@ An Android quiz application built for **SAS (Subordinate Accounts Service)** exa
 
 ```
 app/src/main/java/com/indrajha/sasquiz/
-├── MainActivity.java              # Login screen with Firebase Auth
+├── MainActivity.java              # Google Sign-In & Whitelist check
 ├── WelcomeActivity.java           # Paper selection with category radio buttons
 ├── QuestionsActivity.java         # Quiz screen (Room database questions)
 ├── QuestionsCSV_ReadActivity.java # Quiz screen (Firebase questions)
@@ -40,19 +41,9 @@ app/src/main/java/com/indrajha/sasquiz/
 └── DataRepository.java            # Data access layer
 ```
 
-## 🗄️ Database Schema
+## 🔥 Firebase Configuration
 
-| Column | Type | Description |
-|---|---|---|
-| `id` | INTEGER (PK) | Auto-generated |
-| `text` | TEXT | Question text |
-| `option1`–`option4` | TEXT | Four answer choices |
-| `correctAnswer` | TEXT | The correct option text |
-| `category` | TEXT | e.g., "Part 1", "Part 1 : Book wise", "Part 2" |
-| `paper` | TEXT | e.g., "Paper 1 SET1", "Accounts Code", "OM IX - Set 1" |
-
-## 🔥 Firebase Structure
-
+### 1. Realtime Database (Questions)
 ```
 questions/
 ├── AccountCode/
@@ -64,17 +55,29 @@ questions/
 │   │       ├── 1: "Option B"
 │   │       ├── 2: "Option C"
 │   │       └── 3: "Option D"
-│   ├── q2/ ...
-│   └── ...
 └── <YourNewSet>/      ← Add new nodes here; they appear in-app automatically!
 ```
+
+### 2. Realtime Database (Whitelist)
+To allow a user to log in, add their email to the `allowed_users` node. **Note:** Since Firebase keys cannot contain `.` or `@`, replace them with underscores `_`.
+```
+allowed_users/
+├── indramohan29_gmail_com: true
+└── colleague_office_com: true
+```
+
+### 3. Google Sign-In Setup
+1. Enable **Google** as a Sign-in provider in the Firebase Console.
+2. Select a **Support Email** in Project Settings.
+3. Add both **Debug** and **Release** SHA-1 fingerprints to your Firebase Project.
+4. Download the updated `google-services.json` and place it in the `app/` folder.
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Android Studio (Arctic Fox or later)
+- Android Studio (Electric Eel or later)
 - Java 8+
-- A Firebase project with Realtime Database and Authentication enabled
+- A Firebase project with Realtime Database and Google Auth enabled
 
 ### Setup
 1. Clone the repository:
@@ -83,10 +86,8 @@ questions/
    ```
 2. Open the project in Android Studio.
 3. Add your `google-services.json` file to the `app/` directory.
-4. Build and run on an emulator or device (min API 23).
-
-### Adding New Questions via Firebase
-Simply add a new child node under `questions` in your Firebase Realtime Database following the structure above. The app's "Latest Questions" dropdown dynamically fetches all available sets on launch — **no APK update required**.
+4. **Build -> Clean Project** to ensure the Web Client ID is correctly generated.
+5. Build and run on an emulator or device (min API 23).
 
 ## 📸 Screenshots
 
@@ -104,3 +105,4 @@ This project is for educational and personal use.
 ## 👨‍💻 Developer
 
 **Indra Mohan Jha**
+

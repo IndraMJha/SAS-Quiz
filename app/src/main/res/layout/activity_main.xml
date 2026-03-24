@@ -22,63 +22,24 @@
         android:textColor="#689F38"
         android:textSize="24sp" />
 
-    <EditText
-        android:id="@+id/editName"
-        android:layout_width="232dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="75dp"
-        android:layout_marginLeft="75dp"
-        android:layout_below="@id/textView"
-        android:layout_marginTop="100sp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/enter_name"
-        android:inputType="textPersonName"
-        android:minHeight="48dp"
-        android:textColor="#df040b"
-        android:textColorHint="#546E7A" />
-
-    <EditText
-        android:id="@+id/actNo"
-        android:layout_width="232dp"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="75dp"
-        android:layout_marginLeft="75dp"
-        android:layout_below="@id/editName"
-        android:layout_marginTop="40sp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/enter_acn"
-        android:inputType="textPersonName"
-        android:minHeight="48dp"
-        android:textColor="#df040b"
-        android:textColorHint="#546E7A" />
-
-
     <TextView
-        android:id="@+id/textView9"
-        android:layout_width="106dp"
-        android:layout_height="35dp"
-        android:layout_below="@id/actNo"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="24dp"
-        android:text="" />
-
-    <Button
-        android:id="@+id/buttonLogin"
-        android:layout_width="200dp"
-        android:layout_height="52dp"
-        android:layout_above="@+id/buttonQuit"
+        android:id="@+id/textStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textView"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="-2dp"
-        android:layout_marginLeft="-2dp"
-        android:layout_marginBottom="40dp"
-        android:background="@drawable/round_butt"
-        android:text="@string/login"
-        android:textColor="#ffffff"
-        android:textSize="30sp" />
+        android:layout_marginTop="24dp"
+        android:text="Sign in with your Google account"
+        android:textColor="#546E7A"
+        android:textSize="14sp" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/buttonGoogleSignIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textStatus"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp" />
 
     <Button
         android:id="@+id/buttonQuit"
