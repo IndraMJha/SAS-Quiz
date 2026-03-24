@@ -41,6 +41,33 @@ public class WelcomeActivity extends AppCompatActivity {
         final TextView paper = findViewById(R.id.selPaper);
         final Button signOutButton = findViewById(R.id.btnSignOut);
 
+        final Button btnViewSyllabus = findViewById(R.id.btnViewSyllabus);
+        final Button btnReadBooks = findViewById(R.id.btnReadBooks);
+        final Button btnQuizTest = findViewById(R.id.btnQuizTest);
+        final View quizSelectionLayout = findViewById(R.id.quizSelectionLayout);
+
+        btnViewSyllabus.setOnClickListener(v -> {
+            Intent epubIntent = new Intent(WelcomeActivity.this, EpubViewerActivity.class);
+            epubIntent.putExtra("EPUB_ASSET_FOLDER", "syllabus");
+            epubIntent.putExtra("EPUB_FILE_NAME", "SAS_Syllabus_CGDA.epub");
+            startActivity(epubIntent);
+        });
+
+        btnReadBooks.setOnClickListener(v -> {
+            Intent epubIntent = new Intent(WelcomeActivity.this, EpubViewerActivity.class);
+            epubIntent.putExtra("EPUB_ASSET_FOLDER", "ebooks");
+            epubIntent.putExtra("EPUB_FILE_NAME", "the_constitution_of_india.epub");
+            startActivity(epubIntent);
+        });
+
+        btnQuizTest.setOnClickListener(v -> {
+            if (quizSelectionLayout.getVisibility() == View.GONE) {
+                quizSelectionLayout.setVisibility(View.VISIBLE);
+            } else {
+                quizSelectionLayout.setVisibility(View.GONE);
+            }
+        });
+
         // Configure Google Sign-In (needed for sign out)
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))

@@ -51,6 +51,10 @@
         <activity android:name=".QuestionsCSV_ReadActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false" />
+        <activity android:name=".EpubViewerActivity"
+            android:exported="false"
+            android:label="EPUB Reader"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
