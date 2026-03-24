@@ -55,4 +55,5 @@
     <!-- TODO: Replace with your Web Client ID from Firebase Console -->
     <!-- Go to: Firebase Console → Authentication → Sign-in method → Google → Web Client ID -->
     <!-- <string name="default_web_client_id">258486657508-d7alc7j3isjkd77dr0n2pccpbmqeij8r.apps.googleusercontent.com</string> --> 
+    <string name="sign_out">Sign Out</string>
 </resources>

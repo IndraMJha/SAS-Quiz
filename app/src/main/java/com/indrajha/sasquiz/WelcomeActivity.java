@@ -19,6 +19,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import java.util.ArrayList;
 
 public class WelcomeActivity extends AppCompatActivity {
@@ -35,6 +39,24 @@ public class WelcomeActivity extends AppCompatActivity {
         final Button start1Button = findViewById(R.id.btnStart1);
         final ImageView userPic = findViewById(R.id.picUser);
         final TextView paper = findViewById(R.id.selPaper);
+        final Button signOutButton = findViewById(R.id.btnSignOut);
+
+        // Configure Google Sign-In (needed for sign out)
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        signOutButton.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
+                Intent logoutIntent = new Intent(WelcomeActivity.this, MainActivity.class);
+                logoutIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(logoutIntent);
+                finish();
+            });
+        });
 
         Intent intent = getIntent();
         //////get/display user info

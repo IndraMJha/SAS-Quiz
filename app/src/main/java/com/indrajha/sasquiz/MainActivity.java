@@ -83,6 +83,16 @@ public class MainActivity extends AppCompatActivity {
         quitButton.setOnClickListener(v -> finishAffinity());
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Check if user is already signed in
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            checkWhitelist(currentUser);
+        }
+    }
+
     private void signIn() {
         statusText.setText("Signing in...");
         // Sign out first to always show the account chooser
@@ -134,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("myName", displayName);
                     intent.putExtra("aNo", email);
                     startActivity(intent);
-                    statusText.setText("Sign in with your Google account");
+                    finish(); // Close MainActivity so user can't go back to it
                 } else {
                     // Not whitelisted — deny access
                     mAuth.signOut();
