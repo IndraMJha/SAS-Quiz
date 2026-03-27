@@ -17,24 +17,32 @@ import com.squareup.picasso.Picasso;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import java.io.InputStream;
+import android.net.Uri;
+import androidx.core.content.FileProvider;
+import android.app.AlertDialog;
+import android.content.SharedPreferences;
+import android.text.InputType;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import java.util.Map;
+import java.util.ArrayList;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import java.util.ArrayList;
-import java.io.IOException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import android.net.Uri;
-import androidx.core.content.FileProvider;
-import android.app.AlertDialog;
+
 public class WelcomeActivity extends AppCompatActivity {
 
     private String selectedPart = "Part 1";
     private String selectedPaper = "";
+    private DatabaseReference mDatabase;
+    private DatabaseReference mSuggestionsDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +58,16 @@ public class WelcomeActivity extends AppCompatActivity {
         final Button btnViewSyllabus = findViewById(R.id.btnViewSyllabus);
         final Button btnReadBooks = findViewById(R.id.btnReadBooks);
         final Button btnQuizTest = findViewById(R.id.btnQuizTest);
+        final Button btnNotesBookmarks = findViewById(R.id.btnNotesBookmarks);
+        final Button btnChangelog = findViewById(R.id.btnChangelog);
         final View quizSelectionLayout = findViewById(R.id.quizSelectionLayout);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("changelogs");
+        mSuggestionsDatabase = FirebaseDatabase.getInstance().getReference().child("suggestions");
+
+        btnChangelog.setOnClickListener(v -> showChangelogOptions());
+
+        btnNotesBookmarks.setOnClickListener(v -> showBookmarksMenu());
 
         btnViewSyllabus.setOnClickListener(v -> {
             Intent epubIntent = new Intent(WelcomeActivity.this, EpubViewerActivity.class);
@@ -350,6 +367,8 @@ public class WelcomeActivity extends AppCompatActivity {
                 startActivity(intent1);
             }
         });
+    }
+
     private void openPdfFromAssets(String folder, String fileName) {
         new Thread(() -> {
             try {
@@ -385,5 +404,130 @@ public class WelcomeActivity extends AppCompatActivity {
                 runOnUiThread(() -> Toast.makeText(WelcomeActivity.this, "Error loading PDF", Toast.LENGTH_SHORT).show());
             }
         }).start();
+    }
+
+    private void showBookmarksMenu() {
+        SharedPreferences prefs = getSharedPreferences("epub_bookmarks", MODE_PRIVATE);
+        Map<String, ?> allEntries = prefs.getAll();
+        
+        if (allEntries.isEmpty()) {
+            Toast.makeText(this, "No saved bookmarks found.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        final String[] titles = new String[allEntries.size()];
+        final String[] cfis = new String[allEntries.size()];
+        
+        int i = 0;
+        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+            titles[i] = entry.getKey();
+            cfis[i] = entry.getValue().toString();
+            i++;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Saved Bookmarks");
+        builder.setItems(titles, (dialog, which) -> {
+            String title = titles[which];
+            String cfi = cfis[which];
+            
+            // Assuming the title matches the filename in assets/ebooks for simplicity,
+            // but we might need just the filename. We save them as "filename.epub".
+            Intent epubIntent = new Intent(WelcomeActivity.this, EpubViewerActivity.class);
+            epubIntent.putExtra("EPUB_ASSET_FOLDER", "ebooks");
+            epubIntent.putExtra("EPUB_FILE_NAME", title);
+            epubIntent.putExtra("BOOKMARK_CFI", cfi);
+            startActivity(epubIntent);
+        });
+        builder.show();
+    }
+
+    private void showChangelogOptions() {
+        String[] options = {"View Changelog", "Add Suggestion"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Changelog & Suggestions");
+        builder.setItems(options, (dialog, which) -> {
+            if (which == 0) {
+                fetchChangelog();
+            } else {
+                showSuggestionDialog();
+            }
+        });
+        builder.show();
+    }
+
+    private void showSuggestionDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Submit Suggestion");
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(50, 40, 50, 10);
+
+        final EditText input = new EditText(this);
+        input.setHint("Type your suggestion here...");
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        layout.addView(input);
+
+        builder.setView(layout);
+
+        builder.setPositiveButton("Submit", (dialog, which) -> {
+            String suggestion = input.getText().toString().trim();
+            if (!suggestion.isEmpty()) {
+                submitSuggestion(suggestion);
+            } else {
+                Toast.makeText(this, "Suggestion cannot be empty", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
+    private void submitSuggestion(String suggestion) {
+        String suggestionId = mSuggestionsDatabase.push().getKey();
+        if (suggestionId != null) {
+            mSuggestionsDatabase.child(suggestionId).setValue(suggestion)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(this, "Suggestion submitted! Thank you.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Failed to submit suggestion.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        }
+    }
+
+    private void fetchChangelog() {
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    StringBuilder fullLog = new StringBuilder();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String versionKey = snapshot.getKey();
+                        String versionDisplay = versionKey != null ? versionKey.replace("_", ".") : "Unknown";
+                        String log = snapshot.getValue(String.class);
+                        fullLog.append("Version ").append(versionDisplay).append(":\n").append(log).append("\n\n");
+                    }
+                    showScrollableDialog("Changelog", fullLog.toString().trim());
+                } else {
+                    Toast.makeText(WelcomeActivity.this, "No changelogs found in database.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(WelcomeActivity.this, "Failed to load: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showScrollableDialog(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+               .setMessage(message)
+               .setPositiveButton("OK", null)
+               .show();
     }
 }

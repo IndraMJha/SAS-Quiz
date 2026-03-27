@@ -11,6 +11,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.webkit.JavascriptInterface;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.InputStream;
@@ -38,13 +41,16 @@ public class EpubViewerActivity extends AppCompatActivity {
 
         String epubAssetFolder = getIntent().getStringExtra("EPUB_ASSET_FOLDER");
         String epubFileName = getIntent().getStringExtra("EPUB_FILE_NAME");
+        String bookmarkCfi = getIntent().getStringExtra("BOOKMARK_CFI");
+
+        webView.addJavascriptInterface(new WebAppInterface(this, epubFileName), "Android");
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 if (url.contains("viewer.html")) {
-                    loadEpubIntoWebView(epubAssetFolder, epubFileName);
+                    loadEpubIntoWebView(epubAssetFolder, epubFileName, bookmarkCfi);
                 }
             }
         });
@@ -52,7 +58,7 @@ public class EpubViewerActivity extends AppCompatActivity {
         webView.loadUrl("file:///android_asset/epubjs/viewer.html");
     }
 
-    private void loadEpubIntoWebView(String folder, String filename) {
+    private void loadEpubIntoWebView(String folder, String filename, String bookmarkCfi) {
         new Thread(() -> {
             try {
                 InputStream is = getAssets().open(folder + "/" + filename);
@@ -69,7 +75,8 @@ public class EpubViewerActivity extends AppCompatActivity {
                 String base64 = Base64.encodeToString(fileBytes, Base64.NO_WRAP);
                 
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    String js = "javascript:loadEpubFromBase64('" + base64 + "');";
+                    String passedCfi = (bookmarkCfi != null) ? "'" + bookmarkCfi + "'" : "null";
+                    String js = "javascript:loadEpubFromBase64('" + base64 + "', " + passedCfi + ");";
                     webView.evaluateJavascript(js, null);
                 });
                 
@@ -81,5 +88,27 @@ public class EpubViewerActivity extends AppCompatActivity {
                 });
             }
         }).start();
+    }
+
+    public class WebAppInterface {
+        Context mContext;
+        String mBookTitle;
+
+        WebAppInterface(Context c, String bookTitle) {
+            mContext = c;
+            mBookTitle = bookTitle;
+        }
+
+        @JavascriptInterface
+        public void saveBookmark(String cfi) {
+            SharedPreferences prefs = mContext.getSharedPreferences("epub_bookmarks", Context.MODE_PRIVATE);
+            // We append a timestamp to the title so multiple bookmarks can exist
+            String uniqueKey = mBookTitle + "||" + System.currentTimeMillis();
+            prefs.edit().putString(uniqueKey, cfi).apply();
+            
+            new Handler(Looper.getMainLooper()).post(() -> {
+                Toast.makeText(mContext, "Bookmark saved!", Toast.LENGTH_SHORT).show();
+            });
+        }
     }
 }
