@@ -24,7 +24,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import java.util.ArrayList;
-
+import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import android.net.Uri;
+import androidx.core.content.FileProvider;
+import android.app.AlertDialog;
 public class WelcomeActivity extends AppCompatActivity {
 
     private String selectedPart = "Part 1";
@@ -54,10 +60,49 @@ public class WelcomeActivity extends AppCompatActivity {
         });
 
         btnReadBooks.setOnClickListener(v -> {
-            Intent epubIntent = new Intent(WelcomeActivity.this, EpubViewerActivity.class);
-            epubIntent.putExtra("EPUB_ASSET_FOLDER", "ebooks");
-            epubIntent.putExtra("EPUB_FILE_NAME", "the_constitution_of_india.epub");
-            startActivity(epubIntent);
+            try {
+                String[] files = getAssets().list("ebooks");
+                if (files != null && files.length > 0) {
+                    // Filter for EPUB and PDF
+                    ArrayList<String> bookList = new ArrayList<>();
+                    for (String file : files) {
+                        if (file.toLowerCase().endsWith(".epub") || file.toLowerCase().endsWith(".pdf")) {
+                            bookList.add(file);
+                        }
+                    }
+
+                    if (bookList.isEmpty()) {
+                        Toast.makeText(WelcomeActivity.this, "No books found in assets/ebooks", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    String[] bookNames = bookList.toArray(new String[0]);
+                    
+                    AlertDialog.Builder builder = new AlertDialog.Builder(WelcomeActivity.this);
+                    builder.setTitle("Select a Book to Read");
+                    builder.setItems(bookNames, (dialog, which) -> {
+                        String selectedFile = bookNames[which];
+                        
+                        // Handle EPUB
+                        if (selectedFile.toLowerCase().endsWith(".epub")) {
+                            Intent epubIntent = new Intent(WelcomeActivity.this, EpubViewerActivity.class);
+                            epubIntent.putExtra("EPUB_ASSET_FOLDER", "ebooks");
+                            epubIntent.putExtra("EPUB_FILE_NAME", selectedFile);
+                            startActivity(epubIntent);
+                        } 
+                        // Handle PDF
+                        else if (selectedFile.toLowerCase().endsWith(".pdf")) {
+                            openPdfFromAssets("ebooks", selectedFile);
+                        }
+                    });
+                    builder.show();
+                } else {
+                    Toast.makeText(WelcomeActivity.this, "No books found in assets/ebooks", Toast.LENGTH_SHORT).show();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(WelcomeActivity.this, "Error accessing books folder", Toast.LENGTH_SHORT).show();
+            }
         });
 
         btnQuizTest.setOnClickListener(v -> {
@@ -305,5 +350,40 @@ public class WelcomeActivity extends AppCompatActivity {
                 startActivity(intent1);
             }
         });
+    private void openPdfFromAssets(String folder, String fileName) {
+        new Thread(() -> {
+            try {
+                InputStream inputStream = getAssets().open(folder + "/" + fileName);
+                File cacheDir = getCacheDir();
+                File outFile = new File(cacheDir, fileName);
+                FileOutputStream outputStream = new FileOutputStream(outFile);
+
+                byte[] buffer = new byte[1024];
+                int read;
+                while ((read = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, read);
+                }
+                inputStream.close();
+                outputStream.flush();
+                outputStream.close();
+
+                runOnUiThread(() -> {
+                    Uri uri = FileProvider.getUriForFile(WelcomeActivity.this, getPackageName() + ".fileprovider", outFile);
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setDataAndType(uri, "application/pdf");
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                    try {
+                        startActivity(intent);
+                    } catch (android.content.ActivityNotFoundException e) {
+                        Toast.makeText(WelcomeActivity.this, "No PDF viewer installed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                runOnUiThread(() -> Toast.makeText(WelcomeActivity.this, "Error loading PDF", Toast.LENGTH_SHORT).show());
+            }
+        }).start();
     }
 }
